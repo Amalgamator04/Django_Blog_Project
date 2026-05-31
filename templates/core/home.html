@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<section class="hero">
+    <h2>Welcome to your Photography & Videography blog</h2>
+    <p>Share your latest campaigns, showcase your portfolio, and invite clients to book your services.</p>
+    <div class="hero-actions">
+        {% if not user.is_authenticated %}
+            <a class="button" href="{% url 'register' %}">Get Started</a>
+            <a class="button button-secondary" href="{% url 'login' %}">Login</a>
+        {% else %}
+            <a class="button" href="{% url 'profile' %}">View Profile</a>
+            <a class="button button-secondary" href="{% url 'create_post' %}">Create Post</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="card-grid">
+    {% for post in posts %}
+        <article class="card">
+            <img src="{{ post.image_url }}" alt="{{ post.title }}">
+            <div class="card-body">
+                <h3>{{ post.title }}</h3>
+                <p>{{ post.summary }}</p>
+                <span class="tag">Portfolio placeholder</span>
+            </div>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

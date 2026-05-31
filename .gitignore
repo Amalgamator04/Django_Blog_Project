@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# dotenv
+.env
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# Byte-compiled / optimized / DLL files
+*.so
+
+# IDEs
+.vscode/
+.idea/
+
+# System
+Thumbs.db
+.DS_Store
