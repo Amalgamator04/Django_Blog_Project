@@ -50,16 +50,42 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'blogsite.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DATABASE_NAME', 'blog_post'),
-        'USER': os.environ.get('DATABASE_USER', 'root'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD', '7303025805pps'),
-        'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
-        'PORT': os.environ.get('DATABASE_PORT', '3306'),
+import urllib.parse as urlparse
+
+# Support a single DATABASE_URL environment variable (e.g. mysql://user:pass@host:port/dbname)
+db_url = os.environ.get('DATABASE_URL') or os.environ.get('RENDER_DATABASE_URL') or os.environ.get('CLEARDB_DATABASE_URL')
+
+if db_url:
+    parsed = urlparse.urlparse(db_url)
+    db_scheme = parsed.scheme
+    if db_scheme.startswith('mysql') or db_scheme == 'mysql':
+        engine = 'django.db.backends.mysql'
+    elif db_scheme.startswith('postgres') or db_scheme == 'postgres':
+        engine = 'django.db.backends.postgresql'
+    else:
+        engine = 'django.db.backends.mysql'
+
+    DATABASES = {
+        'default': {
+            'ENGINE': engine,
+            'NAME': parsed.path.lstrip('/'),
+            'USER': parsed.username or os.environ.get('DATABASE_USER', 'root'),
+            'PASSWORD': parsed.password or os.environ.get('DATABASE_PASSWORD', ''),
+            'HOST': parsed.hostname or os.environ.get('DATABASE_HOST', '127.0.0.1'),
+            'PORT': parsed.port or os.environ.get('DATABASE_PORT', '3306'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('DATABASE_NAME', 'blog_post'),
+            'USER': os.environ.get('DATABASE_USER', 'root'),
+            'PASSWORD': os.environ.get('DATABASE_PASSWORD', '7303025805pps'),
+            'HOST': os.environ.get('DATABASE_HOST', '127.0.0.1'),
+            'PORT': os.environ.get('DATABASE_PORT', '3306'),
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
